@@ -1,0 +1,19 @@
+# Maven
+target/
+*.iml
+.idea/
+.mvn/
+
+# Generated Protobuf sources
+**/target/generated-sources/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+*.swp
