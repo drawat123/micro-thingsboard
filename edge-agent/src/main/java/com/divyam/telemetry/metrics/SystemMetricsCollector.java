@@ -1,6 +1,6 @@
 package com.divyam.telemetry.metrics;
 
-import com.divyam.telemetry.domain.SensorReading;
+import com.divyam.telemetry.common.domain.SensorReading;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;

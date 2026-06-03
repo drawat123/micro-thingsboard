@@ -1,6 +1,6 @@
 package com.divyam.telemetry.agent;
 
-import com.divyam.telemetry.domain.SensorReading;
+import com.divyam.telemetry.common.domain.SensorReading;
 import com.divyam.telemetry.metrics.SystemMetricsCollector;
 import com.divyam.telemetry.net.TelemetrySender;
 import org.slf4j.Logger;

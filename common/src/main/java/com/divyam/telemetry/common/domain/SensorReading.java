@@ -1,4 +1,4 @@
-package com.divyam.telemetry.domain;
+package com.divyam.telemetry.common.domain;
 
 import java.time.Instant;
 

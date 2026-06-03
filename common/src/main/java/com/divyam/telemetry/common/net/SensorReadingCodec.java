@@ -1,6 +1,6 @@
-package com.divyam.telemetry.net;
+package com.divyam.telemetry.common.net;
 
-import com.divyam.telemetry.domain.SensorReading;
+import com.divyam.telemetry.common.domain.SensorReading;
 import com.divyam.telemetry.proto.SensorReadingProto;
 
 import java.time.Instant;

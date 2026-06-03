@@ -1,7 +1,7 @@
 package com.divyam.telemetry;
 
-import com.divyam.telemetry.domain.SensorReading;
-import com.divyam.telemetry.net.SensorReadingCodec;
+import com.divyam.telemetry.common.domain.SensorReading;
+import com.divyam.telemetry.common.net.SensorReadingCodec;
 import com.divyam.telemetry.proto.SensorReadingProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
