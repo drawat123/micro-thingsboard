@@ -1,5 +1,6 @@
 package com.divyam.telemetry.backend;
 
+import com.divyam.telemetry.backend.config.TcpServerProperties;
 import com.divyam.telemetry.common.domain.SensorReading;
 import com.divyam.telemetry.common.net.SensorReadingCodec;
 import com.divyam.telemetry.proto.SensorReadingProto;
@@ -24,11 +25,11 @@ public class TcpReceiverConfig {
 
     private static final Logger log = LoggerFactory.getLogger(TcpReceiverConfig.class);
 
-    private static final int PORT = 5555;
-
+    private final TcpServerProperties tcpProperties;
     private final TelemetryIngestionService ingestionService;
 
-    public TcpReceiverConfig(TelemetryIngestionService ingestionService) {
+    public TcpReceiverConfig(TcpServerProperties tcpProperties, TelemetryIngestionService ingestionService) {
+        this.tcpProperties = tcpProperties;
         this.ingestionService = ingestionService;
     }
 
@@ -40,7 +41,8 @@ public class TcpReceiverConfig {
     @Bean
     public AbstractServerConnectionFactory tcpServerConnectionFactory(
             AbstractByteArraySerializer serializer) {
-        return Tcp.netServer(PORT)
+        log.info("Configuring TCP server on port {}", tcpProperties.port());
+        return Tcp.netServer(tcpProperties.port())
                 .deserializer(serializer)
                 .getObject();
     }

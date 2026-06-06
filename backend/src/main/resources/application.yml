@@ -1,0 +1,8 @@
+server:
+  tcp:
+    port: 5555
+
+logging:
+  level:
+    root: INFO
+    com.divyam.telemetry: INFO

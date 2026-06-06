@@ -14,8 +14,7 @@ import java.util.List;
  * Designed to be called repeatedly on a schedule — each call returns a fresh snapshot of CPU and memory readings.
  */
 public class SystemMetricsCollector {
-
-    private static final String AGENT_ID = "mac-edge-01";
+    private final String agentId;
 
     private final CentralProcessor centralProcessor;
 
@@ -23,7 +22,9 @@ public class SystemMetricsCollector {
 
     private long[] prevTicks;
 
-    public SystemMetricsCollector() {
+    public SystemMetricsCollector(String agentId) {
+        this.agentId = agentId;
+
         SystemInfo si = new SystemInfo();
 
         HardwareAbstractionLayer hardwareAbstractionLayer = si.getHardware();
@@ -63,10 +64,10 @@ public class SystemMetricsCollector {
         double memUsedPercent = ((double) usedMemBytes / totalMemBytes) * 100;
 
         return List.of(
-                new SensorReading(AGENT_ID + ".cpu.load.percent", cpuLoadPercent, now),
-                new SensorReading(AGENT_ID + ".mem.used.bytes", usedMemBytes, now),
-                new SensorReading(AGENT_ID + ".mem.used.percent", memUsedPercent, now),
-                new SensorReading(AGENT_ID + ".mem.total.bytes", totalMemBytes, now)
+                new SensorReading(agentId + ".cpu.load.percent", cpuLoadPercent, now),
+                new SensorReading(agentId + ".mem.used.bytes", usedMemBytes, now),
+                new SensorReading(agentId + ".mem.used.percent", memUsedPercent, now),
+                new SensorReading(agentId + ".mem.total.bytes", totalMemBytes, now)
         );
     }
 }

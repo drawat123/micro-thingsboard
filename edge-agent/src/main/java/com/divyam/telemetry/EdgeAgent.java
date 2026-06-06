@@ -1,6 +1,7 @@
 package com.divyam.telemetry;
 
 import com.divyam.telemetry.agent.TelemetryAgent;
+import com.divyam.telemetry.config.AgentConfig;
 import com.divyam.telemetry.metrics.SystemMetricsCollector;
 import com.divyam.telemetry.net.TelemetrySender;
 import org.slf4j.Logger;
@@ -12,14 +13,14 @@ public class EdgeAgent {
 
     private static final Logger log = LoggerFactory.getLogger(EdgeAgent.class);
 
-    private static final long SAMPLING_PERIOD_SECONDS = 2;
-
     public static void main(String[] args) {
-        SystemMetricsCollector collector = new SystemMetricsCollector();
+        AgentConfig config = AgentConfig.load();
 
-        TelemetrySender sender = new TelemetrySender("localhost", 5555);
+        SystemMetricsCollector collector = new SystemMetricsCollector(config.agentId());
 
-        TelemetryAgent agent = new TelemetryAgent(collector, sender, SAMPLING_PERIOD_SECONDS);
+        TelemetrySender sender = new TelemetrySender(config.backendHost(), config.backendPort());
+
+        TelemetryAgent agent = new TelemetryAgent(collector, sender, config.samplingPeriodSeconds());
 
         try {
             sender.start();
