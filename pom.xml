@@ -30,6 +30,7 @@
         <logback.version>1.5.11</logback.version> <!-- Use the version Spring Boot expects -->
         <junit.version>5.11.3</junit.version>
         <paho.version>1.2.5</paho.version>
+        <spring-boot.version>3.3.5</spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -50,6 +51,11 @@
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${junit.version}</version>
@@ -62,7 +68,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.3.5</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

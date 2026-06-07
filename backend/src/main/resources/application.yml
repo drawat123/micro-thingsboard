@@ -1,6 +1,8 @@
-server:
-  tcp:
-    port: 5555
+mqtt:
+  broker:
+    url: "tcp://localhost:1883"
+    clientId: "backend-01"
+    topic: "telemetry/#"
 
 logging:
   level:
