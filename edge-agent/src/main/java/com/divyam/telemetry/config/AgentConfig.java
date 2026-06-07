@@ -11,9 +11,9 @@ import java.util.Properties;
  * Plain-Java configuration loader for the Edge Agent.
  * <p>
  * Layered resolution (lowest to highest priority):
- *   1. Defaults baked into edge-agent.properties on the classpath
- *   2. Environment variables (AGENT_ID, BACKEND_HOST, BACKEND_PORT, SAMPLING_PERIOD_SECONDS)
- *   3. JVM system properties (-Dagent.id=..., etc.)
+ * 1. Defaults baked into edge-agent.properties on the classpath
+ * 2. Environment variables (AGENT_ID, SAMPLING_PERIOD_SECONDS, MQTT_BROKER_URL)
+ * 3. JVM system properties (-Dagent.id=..., etc.)
  */
 public final class AgentConfig {
 
@@ -21,15 +21,13 @@ public final class AgentConfig {
     private static final String CONFIG_FILE = "edge-agent.properties";
 
     private final String agentId;
-    private final String backendHost;
-    private final int backendPort;
     private final long samplingPeriodSeconds;
+    private final String mqttBrokerUrl;
 
-    private AgentConfig(String agentId, String backendHost, int backendPort, long samplingPeriodSeconds) {
+    private AgentConfig(String agentId, long samplingPeriodSeconds, String mqttBrokerUrl) {
         this.agentId = agentId;
-        this.backendHost = backendHost;
-        this.backendPort = backendPort;
         this.samplingPeriodSeconds = samplingPeriodSeconds;
+        this.mqttBrokerUrl = mqttBrokerUrl;
     }
 
     public static AgentConfig load() {
@@ -45,13 +43,12 @@ public final class AgentConfig {
 
         AgentConfig config = new AgentConfig(
                 resolve("agent.id", props),
-                resolve("backend.host", props),
-                Integer.parseInt(resolve("backend.port", props)),
-                Long.parseLong(resolve("sampling.period.seconds", props))
+                Long.parseLong(resolve("sampling.period.seconds", props)),
+                resolve("mqtt.broker.url", props)
         );
 
-        log.info("Loaded configuration: agentId={}, backend={}:{}, samplingPeriod={}s",
-                config.agentId, config.backendHost, config.backendPort, config.samplingPeriodSeconds);
+        log.info("Loaded configuration: agentId={}, samplingPeriod={}s, mqttBrokerUrl={}",
+                config.agentId, config.samplingPeriodSeconds, config.mqttBrokerUrl);
 
         return config;
     }
@@ -76,8 +73,15 @@ public final class AgentConfig {
         return fromFile;
     }
 
-    public String agentId() { return agentId; }
-    public String backendHost() { return backendHost; }
-    public int backendPort() { return backendPort; }
-    public long samplingPeriodSeconds() { return samplingPeriodSeconds; }
+    public String agentId() {
+        return agentId;
+    }
+
+    public String mqttBrokerUrl() {
+        return mqttBrokerUrl;
+    }
+
+    public long samplingPeriodSeconds() {
+        return samplingPeriodSeconds;
+    }
 }

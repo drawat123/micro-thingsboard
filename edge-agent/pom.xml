@@ -43,6 +43,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.mqttv5.client</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.divyam.telemetry</groupId>
             <artifactId>common</artifactId>
         </dependency>

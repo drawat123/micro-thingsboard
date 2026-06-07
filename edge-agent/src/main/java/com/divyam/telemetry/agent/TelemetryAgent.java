@@ -2,7 +2,7 @@ package com.divyam.telemetry.agent;
 
 import com.divyam.telemetry.common.domain.SensorReading;
 import com.divyam.telemetry.metrics.SystemMetricsCollector;
-import com.divyam.telemetry.net.TelemetrySender;
+import com.divyam.telemetry.net.MqttTelemetryPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +12,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * The long-running heart of the Edge Agent.
- * Samples system metrics on a fixed cadence and enqueues each reading
- * on a TelemetrySender for transmission to the backend.
+ * Samples system metrics on a fixed cadence and publishes each reading
+ * to the MQTT broker for transmission to the backend.
  */
 public class TelemetryAgent {
 
@@ -24,15 +23,15 @@ public class TelemetryAgent {
 
     private final ScheduledExecutorService scheduler;
 
-    private final TelemetrySender sender;
+    private final MqttTelemetryPublisher publisher;
 
     private final long samplingPeriodSeconds;
 
     private final AtomicBoolean started = new AtomicBoolean(false);
 
-    public TelemetryAgent(SystemMetricsCollector collector, TelemetrySender sender, long samplingPeriodSeconds) {
+    public TelemetryAgent(SystemMetricsCollector collector, MqttTelemetryPublisher publisher, long samplingPeriodSeconds) {
         this.collector = collector;
-        this.sender = sender;
+        this.publisher = publisher;
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.samplingPeriodSeconds = samplingPeriodSeconds;
     }
@@ -61,10 +60,10 @@ public class TelemetryAgent {
                 var readings = collector.collect();
 
                 for (SensorReading reading : readings) {
-                    sender.enqueue(reading);
+                    publisher.publish(reading);    // <- was sender.enqueue(reading)
                 }
 
-                log.debug("Enqueued {} readings", readings.size());
+                log.debug("Published {} readings", readings.size());
             } catch (Throwable t) {
                 log.error("Unexpected error during metrics collection", t);
             }

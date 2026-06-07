@@ -29,6 +29,7 @@
         <slf4j.version>2.0.18</slf4j.version>
         <logback.version>1.5.11</logback.version> <!-- Use the version Spring Boot expects -->
         <junit.version>5.11.3</junit.version>
+        <paho.version>1.2.5</paho.version>
     </properties>
 
     <dependencyManagement>
@@ -53,20 +54,24 @@
                 <artifactId>junit-jupiter</artifactId>
                 <version>${junit.version}</version>
             </dependency>
-
-            <!-- Internal: the common module -->
             <dependency>
-                <groupId>com.divyam.telemetry</groupId>
-                <artifactId>common</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>org.eclipse.paho.mqttv5.client</artifactId>
+                <version>${paho.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>3.3.5</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- Internal: the common module -->
+            <dependency>
+                <groupId>com.divyam.telemetry</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
