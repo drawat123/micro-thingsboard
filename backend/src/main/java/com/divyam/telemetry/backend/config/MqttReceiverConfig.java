@@ -1,6 +1,6 @@
-package com.divyam.telemetry.backend;
+package com.divyam.telemetry.backend.config;
 
-import com.divyam.telemetry.backend.config.MqttBrokerProperties;
+import com.divyam.telemetry.backend.service.TelemetryIngestionService;
 import com.divyam.telemetry.common.domain.SensorReading;
 import com.divyam.telemetry.common.net.SensorReadingCodec;
 import com.divyam.telemetry.proto.SensorReadingProto;

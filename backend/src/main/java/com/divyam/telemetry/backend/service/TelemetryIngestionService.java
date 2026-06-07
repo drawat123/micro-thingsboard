@@ -1,4 +1,4 @@
-package com.divyam.telemetry.backend;
+package com.divyam.telemetry.backend.service;
 
 import com.divyam.telemetry.common.domain.SensorReading;
 import org.slf4j.Logger;
