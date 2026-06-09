@@ -1,0 +1,105 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Local Kafka broker for Micro-ThingsBoard development.
+#
+# Runs a single Kafka node in KRaft mode (no ZooKeeper). Suitable for local
+# development only — production deployments need 3+ brokers, proper replication,
+# durable volumes, security, and monitoring.
+#
+# Usage:
+#   docker compose up -d              # start in background
+#   docker compose logs -f kafka      # tail broker logs
+#   docker compose down               # stop and remove containers
+#
+# Client connections from the host (your Mac):
+#   bootstrap-server: localhost:9092
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  kafka:
+    # Confluent's Kafka image — most widely used Kafka image for development.
+    # Version 7.5+ supports KRaft mode out of the box (no separate ZooKeeper).
+    image: confluentinc/cp-kafka:7.5.3
+    container_name: kafka-dev
+
+    ports:
+      # Expose ONLY the host-facing listener (9092) to the Mac.
+      # The internal listener (29092) and controller port (29093) stay inside
+      # the Docker network — no need to publish them.
+      - "9092:9092"
+
+    environment:
+      # ─────────────────────────────────────────────────────────────────────
+      # KRaft identity & roles
+      # ─────────────────────────────────────────────────────────────────────
+      # In KRaft mode, each node has an ID and one or more "roles".
+      # A single-node dev cluster runs both broker AND controller in one process.
+      # In production, these roles are typically split across separate nodes.
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+
+      # KAFKA_CONTROLLER_QUORUM_VOTERS: "{nodeId}@{host}:{port}"
+      # Lists every node that participates in the KRaft controller quorum.
+      # For a 3-controller production cluster: '1@host1:9093,2@host2:9093,3@host3:9093'
+      # For our single-node dev: just node 1 talking to itself.
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:29093'
+
+      # Permanent cluster identifier. Kafka uses this on disk to verify the
+      # cluster identity at startup. Any valid base64 UUID works.
+      # In production, generate per environment via: kafka-storage random-uuid
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Listeners (the trickiest Kafka config)
+      # ─────────────────────────────────────────────────────────────────────
+      # Two distinct things to configure:
+      #
+      #   KAFKA_LISTENERS            = what sockets does the broker BIND to?
+      #   KAFKA_ADVERTISED_LISTENERS = what addresses does it TELL clients to use?
+      #
+      # The broker can listen on one address and advertise a different one.
+      # This matters for Docker: clients inside the Docker network use one
+      # hostname, clients on the host use another (localhost).
+      #
+      # We define THREE listeners:
+      #   1. PLAINTEXT       (29092) — inter-broker traffic (between brokers)
+      #   2. CONTROLLER      (29093) — KRaft cluster metadata traffic
+      #   3. PLAINTEXT_HOST  (9092)  — host-facing (your Mac connects here)
+      #
+      # 0.0.0.0 means "bind to all network interfaces inside the container."
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+
+      # Advertised listeners — what the broker says when a client asks
+      # "how do I reach you?"
+      #   - Other containers reach us at 'kafka-dev:29092' (Docker DNS)
+      #   - The host Mac reaches us at 'localhost:9092'
+      # CONTROLLER is never advertised — clients don't talk to controllers directly.
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-dev:29092,PLAINTEXT_HOST://localhost:9092'
+
+      # Which listener name is used for inter-broker traffic.
+      # With only one broker, this is unused — but Kafka still requires it set.
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+
+      # Which listener name(s) handle controller traffic (KRaft metadata).
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+
+      # Security protocol for each listener. PLAINTEXT = no TLS/SASL — fine for
+      # local dev, NEVER acceptable in production (use SSL or SASL_SSL).
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Single-node tuning
+      # ─────────────────────────────────────────────────────────────────────
+      # Kafka's internal topics (__consumer_offsets, __transaction_state) default
+      # to replication factor 3 — designed for production clusters with 3+ brokers.
+      # On a single-broker dev cluster, this default causes Kafka to wait forever
+      # for non-existent replicas. Override to 1.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # When a new consumer group forms, Kafka by default waits 3 seconds
+      # before assigning partitions, hoping more consumers will join.
+      # For dev iteration, 0 ms gives instant assignment.
+      # In production, the 3s default is the right choice — avoids unnecessary
+      # rebalances when starting multiple consumers in quick succession.
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
