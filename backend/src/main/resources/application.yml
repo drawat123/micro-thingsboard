@@ -8,3 +8,8 @@ logging:
   level:
     root: INFO
     com.divyam.telemetry: INFO
+
+kafka:
+  bootstrap-servers: "localhost:9092"
+  topic: "raw-telemetry"
+  acks: "1"
