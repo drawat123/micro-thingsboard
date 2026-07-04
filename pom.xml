@@ -17,8 +17,8 @@
     <modules>
         <module>common</module>
         <module>edge-agent</module>
-        <module>smoke-server</module>
-        <module>backend</module>
+        <module>mqtt-transport</module>
+        <module>telemetry-processor</module>
     </modules>
 
     <properties>

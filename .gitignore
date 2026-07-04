@@ -17,3 +17,6 @@ logs/
 # IDE
 .vscode/
 *.swp
+
+# Local dev notes (machine-local paths; never commit — may accrue secrets)
+terminal-commands.txt

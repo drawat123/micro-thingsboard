@@ -41,10 +41,10 @@ You declare; Spring constructs.
 When we start a Spring Boot application:
 
 ```java
-SpringApplication.run(BackendApplication .class, args);
+SpringApplication.run(MqttTransportApplication.class, args);
 ```
 
-We pass a **Class object** (`BackendApplication.class`), not an instance.
+We pass a **Class object** (`MqttTransportApplication.class`), not an instance.
 
 Spring uses **Java Reflection** to inspect the class and create an object at runtime. Simplified internals:
 
@@ -88,10 +88,12 @@ Spring Boot's component scan starts **from the package of the `@SpringBootApplic
 all sub-packages. Put your main class in a root package; everything else in sub-packages.
 
 ```
-com.divyam.telemetry.backend             ← BackendApplication.java (main)
-com.divyam.telemetry.backend.config      ← @Configuration classes
-com.divyam.telemetry.backend.service     ← @Service classes
+com.divyam.telemetry.transport           ← MqttTransportApplication.java (main)
+com.divyam.telemetry.transport.config    ← @Configuration classes
+com.divyam.telemetry.transport.service   ← @Service classes
 ```
+
+> **Note:** the module formerly called `backend` was renamed to `mqtt-transport` in the transport-layer refactor. Older prose in these notes may still say "backend" as a generic term for the server side.
 
 ## Why a Spring App Without Web Stays Alive (Or Doesn't)
 
@@ -291,7 +293,7 @@ A POM with `<packaging>pom</packaging>` (no JAR/WAR produced). Purely a coordina
     <modules>
         <module>common</module>
         <module>edge-agent</module>
-        <module>backend</module>
+        <module>mqtt-transport</module>
     </modules>
 
     <properties>
@@ -447,7 +449,7 @@ Enable in the main app:
 
 @SpringBootApplication
 @EnableConfigurationProperties(MqttBrokerProperties.class)
-public class BackendApplication { ...
+public class MqttTransportApplication { ...
 }
 ```
 

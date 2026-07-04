@@ -1,0 +1,22 @@
+kafka:
+  bootstrap-servers: "localhost:9092"
+  topic: "raw-telemetry"
+
+  # The consumer group. All processor instances sharing this id form one group
+  # and split raw-telemetry's 3 partitions between them (max 3 active consumers).
+  group-id: "processor-group"
+
+  # TODO (lesson decision): choose the offset-reset policy deliberately.
+  #   "earliest" — on first run (no committed offset), replay the whole log from
+  #                the beginning. Good while developing: you see every message
+  #                the backend ever produced, including old experiments.
+  #   "latest"   — ignore history, only consume messages produced after this
+  #                consumer joins. Closer to production telemetry behavior.
+  # This only takes effect when the group has NO committed offset. Once the group
+  # has committed, Kafka resumes from the committed position regardless.
+  auto-offset-reset: "earliest"
+
+logging:
+  level:
+    root: INFO
+    com.divyam.telemetry: INFO
