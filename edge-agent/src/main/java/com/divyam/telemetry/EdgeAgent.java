@@ -8,8 +8,6 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 public class EdgeAgent {
 
     private static final Logger log = LoggerFactory.getLogger(EdgeAgent.class);
@@ -23,8 +21,7 @@ public class EdgeAgent {
         MqttTelemetryPublisher publisher = new MqttTelemetryPublisher(
                 config.mqttBrokerUrl(),
                 clientId,
-                config.agentId()
-        );
+                config.agentId());
 
         TelemetryAgent agent = new TelemetryAgent(collector, publisher, config.samplingPeriodSeconds());
 
@@ -34,11 +31,12 @@ public class EdgeAgent {
             log.error("Cannot connect to MQTT broker at {}", config.mqttBrokerUrl(), e);
             System.exit(1);
         }
-        
+
         agent.start();
 
         // The JVM runs shutdown hooks only in case of normal terminations.
-        // So, when an external force kills the JVM process abruptly, the JVM won’t get a chance to execute shutdown hooks.
+        // So, when an external force kills the JVM process abruptly, the JVM won’t get
+        // a chance to execute shutdown hooks.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             agent.stop();
             publisher.stop();
